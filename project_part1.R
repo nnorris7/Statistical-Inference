@@ -54,7 +54,7 @@ print(summary_table)
 means.df <- data.frame(Means = sample_means)
 
 ## Open the png device
-#png(file = "./plot1.png", width = 800, height = 600)
+png(file = "./plot1.png", width = 800, height = 600)
 
 g1 <- ggplot(means.df, aes(x = Means)) +
     geom_histogram(aes(y = ..density..), fill = "yellow", binwidth = 1/6, color = "darkgrey", alpha = 1/3) +
@@ -67,10 +67,10 @@ g1 <- ggplot(means.df, aes(x = Means)) +
     scale_x_continuous(limits = c(1, 9), breaks = 1:9) +
     scale_color_discrete(name = "Annotations")
 
-g1
+print(g1)
 
 ## Close device
-#dev.off()
+dev.off()
 
 ## Create Q-Q Plot, which plots sample means quantiles vs theoretical/normal quantiles
 ## Adds (red) line where sample and theoretical quantiles are equal
