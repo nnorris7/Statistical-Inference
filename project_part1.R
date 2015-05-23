@@ -11,7 +11,7 @@ num_sims <- 1000
 lambda <- 0.2
 sample_size <- 40
 
-## Calcuate the theoretical mean, standard deviation, and variance
+## Calculate the theoretical mean, standard deviation, and variance
 ## Theoretical mean = 1 / lambda
 theoretical_mean = 1 / lambda
 
@@ -54,21 +54,34 @@ print(summary_table)
 means.df <- data.frame(Means = sample_means)
 
 ## Open the png device
-png(file = "./plot1.png", width = 800, height = 600)
+#png(file = "./plot1.png", width = 800, height = 600)
 
-g <- ggplot(means.df, aes(x = Means))
-
-p1 <- g + geom_histogram(aes(y = ..density..), fill = "steelblue", binwidth = 1/10, color = "darkgrey", alpha = 1/3) +
+g1 <- ggplot(means.df, aes(x = Means)) +
+    geom_histogram(aes(y = ..density..), fill = "yellow", binwidth = 1/6, color = "darkgrey", alpha = 1/3) +
     geom_density(aes(color = "Means distribution"), size = 1, show_guide = FALSE) +
     stat_function(fun = dnorm, arg = list(mean = theoretical_mean, sd = theoretical_sd), aes(color = "Normal distribution"), size = 1) +
     geom_vline(aes(xintercept = sample_rowMean, colour = "Sample mean"), size = 1) +
-    geom_vline(aes(xintercept = theoretical_mean, colour = "Theoretical mean"), size = 1, linetype = "dashed") +
+    geom_vline(aes(xintercept = theoretical_mean, colour = "Theoretical mean"), size = 1, linetype = "twodash") +
     theme(legend.justification = c(1.15,-1.4), legend.position = c(1,0.5)) + 
     labs(title = "1000 Sample Means Distribution", x = "Means of 40 exponential distributions (lambda = 0.2)", y = "Density") +
     scale_x_continuous(limits = c(1, 9), breaks = 1:9) +
     scale_color_discrete(name = "Annotations")
 
-print(p1)
+g1
+
+## Close device
+#dev.off()
+
+## Create Q-Q Plot, which plots sample means quantiles vs theoretical/normal quantiles
+## Adds (red) line where sample and theoretical quantiles are equal
+## Open the png device
+png(file = "./plot2.png", width = 800, height = 600)
+
+g2 <- ggplot(means.df, aes(sample = Means)) + stat_qq(color = "blue", alpha = 1) +
+    geom_abline(intercept = mean(means.df$Means), slope = sd(means.df$Means), color = "red") +
+    labs(title = "Normal Q-Q Plot", x = "Theoretical Quantiles", y = "Sample Means Quantiles")
+    
+print(g2)
 
 ## Close device
 dev.off()
