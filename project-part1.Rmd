@@ -9,24 +9,21 @@ output:
 
 ##Exponential Distribution Averages and the Central Limit Theorem
 
-##Overview:
+##Overview
 This project investigates the properties of the distribution of averages of exponentials, with a sample size of 40, and compares it to the Central Limit Theorem (CLT). The CLT states the distribution of averages of independent and identically distributed (iid) variables (properly normalized) becomes that of a standard normal as the sample size increases. Therefore, the project explores whether averages of exponential distributions become normally distributed when simulated many times.
 
-##Objectives:
+##Objectives
 Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponentials. You should
-
 1. Show the sample mean and compare it to the theoretical mean of the distribution.
-
 2. Show how variable the sample is (via variance) and compare it to the theoretical variance of the distribution.
-
 3. Show that the distribution is approximately normal.
 
-##Simulations:
+##Simulations
 R was used to simulate the exponential distribution with a sample size of 40 and lambda of 0.2, calculate the average of this distribution, and repeat this 1000 times. A histogram of these averages was plotted along with the calculation of the sample mean, standard deviate and variance, which were compared with the theoretical mean, standard deviate and variance.
 
-##Results:
+##Results
 ####Objectives 1 and 2:
-The table below summarizes the results for objectives 1 and 2. The R code to run the simulation, to create the table and plots below, and to calculate the sample/theoretical means and variances appears in the appendix (with ample comments).
+The table below summarizes the results for objectives 1 and 2. The R code to run the simulation, to create the table and plots below, and to calculate the sample/theoretical means and variances appears in the appendix.
 
 ```{r, echo = F}
 ## This version of the script does not contain any comments, as it just generates the table and plots and is not "echoed".
@@ -84,7 +81,7 @@ print(g1)
 ```
 
 ####Objective 3:
-Objective 3 asks to show that the sample means distribution is approximately normal. In order to do this, I produced a [Q-Q plot](http://en.wikipedia.org/wiki/Q–Q_plot), which provides a visual guide of how normal a distribution is.
+Objective 3 asks to show that the sample means distribution is approximately normal. In order to do this, I produced a Q-Q plot (http://en.wikipedia.org/wiki/Q–Q_plot), which provides a visual guide of how normal a distribution is.
 
 Briefly, a Q-Q plot looks at the various quantiles of the sample and compares them to the normal quantiles (and plots these). If the sample distribution is (approximately) normal, we would expect the points plotted to fall along the “y = x” line.
 
@@ -99,11 +96,11 @@ g2 <- ggplot(means.df, aes(sample = Means)) + stat_qq(color = "blue", alpha = 1)
 print(g2)
 ```
 
-##Appendix:
+##Appendix
 Here is the R code to run the simulations and product the table and plots.
 
 ```{r, eval = F}
-## This R script generates the answers as outlined in the Course Project - Part 1 for Statistical Inference
+## This R script generates the answers for the Statistical Inference Course Project - Part 1
 
 ## Load packages
 library(ggplot2)
@@ -193,4 +190,3 @@ dev.off()
 
 ## End of file
 ```
-

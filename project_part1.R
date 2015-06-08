@@ -1,4 +1,4 @@
-## This R script generates the answers as outlined in the Course Project - Part 1 for Statistical Inference
+## This R script generates the answers for the Statistical Inference Course Project - Part 1
 
 ## Load packages
 library(ggplot2)

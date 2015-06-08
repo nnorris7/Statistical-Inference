@@ -1,0 +1,228 @@
+---
+title: "Statistical Inference Course Project - Part 2"
+author: "Norman Norris"
+date: "May 24, 2015"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+##Confidence Intervals and Hypothesis Testing
+
+##Overview
+This project analyzes the ToothGrowth data in the R datasets package. The data consists of measurements of the mean tooth length from a population of 60 guinea pigs. The animals were divided into 6 groups of 10 and fed a diet with one of 6 Vitamin C supplements for a period of 42 days. The Vitamin C was administered in the form of Orange Juice (OJ) or Vitamin C (VC). Each animal received the same daily dose of Vitamin C (either 0.5, 1.0 or 2.0 milligrams/day) consistently. The ToothGrowth dataset consists of 60 observations of 3 variables - mean tooth length (microns), supplement type (OJ or VC) and Vitamin C dose (milligrams/day).
+
+##Objectives
+Analyze the ToothGrowth data:
+
+1. Load the ToothGrowth data and perform some basic exploratory data analyses.
+2. Provide a basic summary of the data.
+3. Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering).
+4. State your conclusions and the assumptions needed for your conclusions.
+
+##Results
+####Objectives 1 and 2:
+
+```{r}
+## Load packages and dataset
+library(datasets)
+data(ToothGrowth)
+
+## Perform some basic exploratory data analyses
+str(ToothGrowth)
+```
+
+We see the "dose" variable is a numeric. Since the dose can only takes on 3 discrete values, we convert it to a Factor and summarize the data.
+
+```{r}
+## Convert the dose to a Factor, as it only takes on 3 discrete values
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+
+## Summarize the data
+summary(ToothGrowth)
+```
+
+Then we perform a quick boxplot of tooth length by dose, faceting on suppliment type.
+
+```{r, eval = F}
+## Create a boxplot of tooth length vs dose, faceting by suppliment type
+g <- ggplot(ToothGrowth, aes(x = dose, y = len))
+
+p1 <- g + geom_boxplot(aes(fill = dose)) + facet_grid(. ~ supp, labeller = fips_labeller) +
+    labs(title = "Boxplot of Tooth Length by Suppliment and Dose") +
+    labs(x = "Dose (mg/day)", y = "Length (microns)") +
+    guides(fill = F)
+
+print(p1)
+```
+
+```{r, echo = F}
+## Load packages and dataset
+library(datasets)
+library(ggplot2)
+
+data(ToothGrowth)
+
+## Convert the dose to a Factor, as it only takes on 3 discrete values
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+
+## Define a labeller function that will return "nice" names for the facet labels
+fips_labeller <- function(variable, value) {
+    return(fips_names[value])
+}
+
+## Define the facet labels in a list (used by the above function)
+fips_names <- list(
+    'OJ' = "Orange Juice",
+    'VC' = "Vitamin C")
+
+## Create a boxplot of tooth length vs dose, faceting by suppliment type
+g <- ggplot(ToothGrowth, aes(x = dose, y = len))
+
+p1 <- g + geom_boxplot(aes(fill = dose)) + facet_grid(. ~ supp, labeller = fips_labeller) +
+    labs(title = "Boxplot of Tooth Length by Suppliment and Dose") +
+    labs(x = "Dose (mg/day)", y = "Length (microns)") +
+    guides(fill = F)
+
+print(p1)
+```
+
+####Objective 3:
+Based on these observations, we propose the following hypotheses:
+
+1. Suppliment dose improves tooth length, since a higher dose is associated with longer teeth for both suppliment types.
+2. Suppliment type also has an affect tooth length, since tooth lengths associated with Orange Juice supplimentation seem to be longer than those with Vitamin C supplimentation (questionable for the highest dosage of OJ/VC, where tooth lengths are very close).
+3. The fact the maximum dose produced similar tooth lengths might indicate a threshold level between 1 and 2 mg, which marks a “maximum eﬀect point”, over which higher doses of suppliment produce no additional eﬀect.
+
+####Hypothesis #1 - Higher dose improves tooth length
+We calculate the T-test for the different doses, regardless of suppliment type.
+(2 tests performed, 0.5 mg vs 1.0 mg, 1.0 mg vs 2.0 mg)
+
+####Dose 0.5 mg/day vs 1.0 mg/day
+```{r, eval = F}
+## Subset data and then compare dose of 0.5 mg/day to 1.0 mg/day
+dose_05v10 <- subset(ToothGrowth, dose %in% c(0.5, 1))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose_05v10)
+```
+
+```{r, echo = F}
+## Load packages
+library(datasets)
+library(ggplot2)
+
+## Load the dataset
+data(ToothGrowth)
+
+## Convert the dose to a Factor, as it only takes on 3 discrete values
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+
+## Subset data and then compare dose of 0.5 mg/day to 1.0 mg/day
+dose_05v10 <- subset(ToothGrowth, dose %in% c(0.5, 1))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose_05v10)
+```
+
+####Dose 1.0 mg/day vs 2.0 mg/day
+```{r, eval = F}
+## Subset data and then compare dose of 1.0 mg/day to 2.0 mg/day\
+dose_10v20 <- subset(ToothGrowth, dose %in% c(1, 2))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose_10v20)
+```
+
+```{r, echo = F}
+## Load packages
+library(datasets)
+library(ggplot2)
+
+## Load the dataset
+data(ToothGrowth)
+
+## Convert the dose to a Factor, as it only takes on 3 discrete values
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+
+## Subset data and then compare dose of 1.0 mg/day to 2.0 mg/day\
+dose_10v20 <- subset(ToothGrowth, dose %in% c(1, 2))
+t.test(len ~ dose, paired = F, var.equal = F, data = dose_10v20)
+```
+
+####Hypothesis #2 - Suppliment type matters (OJ is better than VC)
+We calculate the T-test for the two suppliments, while holding the dose constant.
+(3 tests performed, one for each dose)
+
+####Dose = 0.5 mg/day
+```{r, eval = F}
+## Compare suppliment type for dose = 0.5 mg/day
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth[ToothGrowth$dose == 0.5, ])
+```
+
+```{r, echo = F}
+## Load packages
+library(datasets)
+library(ggplot2)
+
+## Load the dataset
+data(ToothGrowth)
+
+## Convert the dose to a Factor, as it only takes on 3 discrete values
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+
+## Compare suppliment type for dose = 0.5 mg/day
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth[ToothGrowth$dose == 0.5, ])
+```
+
+####Dose = 1.0 mg/day
+```{r, eval = F}
+## Compare suppliment type for dose = 1.0 mg/day
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth[ToothGrowth$dose == 1.0, ])
+```
+
+```{r, echo = F}
+## Load packages
+library(datasets)
+library(ggplot2)
+
+## Load the dataset
+data(ToothGrowth)
+
+## Convert the dose to a Factor, as it only takes on 3 discrete values
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+
+## Compare suppliment type for dose = 0.5 mg/day
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth[ToothGrowth$dose == 1.0, ])
+```
+
+####Dose = 2.0 mg/day
+```{r, eval = F}
+## Compare suppliment type for dose = 2.0 mg/day
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth[ToothGrowth$dose == 2.0, ])
+```
+
+```{r, echo = F}
+## Load packages
+library(datasets)
+library(ggplot2)
+
+## Load the dataset
+data(ToothGrowth)
+
+## Convert the dose to a Factor, as it only takes on 3 discrete values
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+
+## Compare suppliment type for dose = 0.5 mg/day
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth[ToothGrowth$dose == 2.0, ])
+```
+
+##Conclusions
+####Objective 4:
+1. Dose influences tooth length. Higher doses produce more tooth growth.
+- Looking at the T-tests for 0.5 mg/day vs 1.0 mg/day and 1.0 mg/day vs 2.0 mg/day, both have completely negative confidence intervals (at 95%) and very small p-values (both less than 0.1%). This tells us a value of 0 is not in the confidence interval, therefore we should reject the null hypothesis and conclude higher doses are responsible for greater tooth length.
+
+2. Suppliment type influences tooth length. Orange Juice is a better suppliment for tooth growth than Vitamin C, below 2.0 mg/day.
+- At doses of 0.5 mg/day and 1.0 mg/day, both T-tests show completely positive confidence intervals (at 95%) and small p-values (~ 0.6% and 0.1% respectively), therefore we are forced to reject the null hypothesis in these cases and conclude that suppliment (i.e. Orange Juice), at these doses, are responsible for greater tooth length. However, at a dose of 2.0 mg/day, zero is contained in the confidence interval and the p-value is very high, therefore we cannot reject the null hypothesis for a dose of 2.0 mg/day and conclude that at this dose, the type of suppliment does not affect tooth growth.
+
+3. More data would be required to determine if there is a "threshold" dose, above which further supplimentation does not improve tooth length.
+
+##Assumptions
+1. The experiment states each Guinea pig was randomly assigned to a combination of dose and supplement type, so the tests we performed used the independent samples methodology, meaning the tests assume different population variances and "not paired" subjects.
+2. The sample of 60 Guinea pigs is assumed to be representative of the population, therefore allowing us to to generalize our conclusions.
